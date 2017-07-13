@@ -1,0 +1,23 @@
+<launch>
+  <group ns="sim_p3at">
+  <node pkg="joy" type="joy_node" name="joy"/>
+  <rosparam param="teleop">
+  walk:
+    type: topic
+    message_type: geometry_msgs/Twist
+    topic_name: cmd_vel
+    deadman_buttons: [7]
+    axis_mappings:
+      -
+        axis: 3
+        target: linear.x
+        scale: 0.5
+        offset: 0
+      -
+        axis: 0
+        target: angular.z
+        scale: 0.5
+  </rosparam>
+  <node pkg="joy_teleop" type="joy_teleop.py" name="joy_teleop"/>
+ </group>
+</launch>
