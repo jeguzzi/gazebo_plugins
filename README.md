@@ -2,7 +2,7 @@
 
 This plugin publishes three topics:
 - `~/joint_states`: a [sensor_msgs/JointState.msg](http://docs.ros.org/api/sensor_msgs/html/msg/JointState.html) with complete information, i.e. angle, angular speed and effort (torque) for all wheel joints;
-- `~/contact_state`: a [ContactState.msg](https://github.com/jeguzzi/gazebo_plugins/blob/master/msg/ContactState.msg) that inform you if the wheels (or the chassis) are touching the terrain;
+- `~/contact_state`: a [ContactState.msg](https://github.com/jeguzzi/gazebo_plugins/blob/master/msg/ContactState.msg) that informs you if the wheels (or the chassis) are touching the terrain;
 - `~/power`: a
 [Power.msg](https://github.com/jeguzzi/gazebo_plugins/blob/master/msg/Power.msg) that contains (motor) power and consumed energy.
 
