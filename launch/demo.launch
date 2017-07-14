@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find gazebo_traversability_plugin)/launch/pioneer3at.launch"/>
+  <include file="$(find gazebo_traversability_plugin)/launch/teleop.launch"/>
+</launch>

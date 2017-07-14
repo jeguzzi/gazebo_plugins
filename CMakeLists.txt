@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(j_gazebo_plugins)
+project(gazebo_traversability_plugin)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   angles
   std_msgs
   urdf
+  message_generation
 )
 
 find_package(Boost REQUIRED COMPONENTS thread)
@@ -57,11 +58,11 @@ include_directories(include
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  Power.msg
+  ContactState.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -78,10 +79,10 @@ include_directories(include
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -115,7 +116,7 @@ include_directories(include
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES gazebo_plugins
-#  CATKIN_DEPENDS other_catkin_pkg
+   CATKIN_DEPENDS message_runtime
 #  DEPENDS system_lib
 )
 
@@ -150,9 +151,9 @@ catkin_package(
 # )
 
 
-add_library(gazebo_ros_power src/gazebo_ros_power.cpp)
-target_link_libraries(gazebo_ros_power ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-
+add_library(gazebo_ros_traversability src/gazebo_ros_traversability.cpp)
+target_link_libraries(gazebo_ros_traversability ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_dependencies(gazebo_ros_traversability ${${PROJECT_NAME}_EXPORTED_TARGETS})
 #############
 ## Install ##
 #############
