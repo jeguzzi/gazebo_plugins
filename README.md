@@ -91,7 +91,7 @@ to your model. The plugin will publish information about all joints in `<jointNa
 
 #### Time stamps
 
-If `<useROSTime>` is set to `true`, messages are stamped with `ros::Time::now()` instead of `world->GetSimTime()` causing some jittering beacuse of tcp latency (ros clock in nodes is updated via the `/clock` topic).
+If `<useROSTime>` is set to `true`, messages are stamped with `ros::Time::now()` instead of `world->GetSimTime()` causing some jittering because of tcp latency [time in ros nodes is updated via the `/clock` topic].
 
 #### Pose and Twist publishers
 
