@@ -1,10 +1,14 @@
 # gazebo_plugins
 
-This plugin publishes three topics:
+This plugin publishes five topics:
 - `~/joint_states`: a [sensor_msgs/JointState.msg](http://docs.ros.org/api/sensor_msgs/html/msg/JointState.html) with complete information, i.e. angle, angular speed and effort (torque) for all wheel joints;
 - `~/contact_state`: a [ContactState.msg](https://github.com/jeguzzi/gazebo_plugins/blob/master/msg/ContactState.msg) that informs you if the wheels (or the chassis) are touching the terrain;
 - `~/power`: a
-[Power.msg](https://github.com/jeguzzi/gazebo_plugins/blob/master/msg/Power.msg) that contains (motor) power and consumed energy.
+[Power.msg](https://github.com/jeguzzi/gazebo_plugins/blob/master/msg/Power.msg) that contains (motor) power and consumed energy;
+- [optionally] `~/pose`: a
+[PoseStamped.msg](http://docs.ros.org/api/geometry_msgs/html/msg/PoseStamped.html) with the robot's pose;
+- [optionally] `~/twist`: a
+[TwistStamped.msg](http://docs.ros.org/api/geometry_msgs/html/msg/TwistStamped.html) with the robot's twist (in world frame).
 
 Note that the pioneer3at simulation has no motors but a controller that instantaneously change the joint's angular velocity. We estimate *mechanical* power by computing for each wheel w in {fl = front left, fr, bl, br}
 
