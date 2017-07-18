@@ -66,7 +66,7 @@ void GazeboRosTraversability::Load( physics::ModelPtr _parent, sdf::ElementPtr _
 
         update_rate_ = 100.0;
         if ( !_sdf->HasElement ( "updateRate" ) ) {
-                ROS_WARN_NAMED("joint_state_publisher",
+                ROS_WARN_NAMED("gazebo_ros_traversability",
                                "GazeboRosTraversability Plugin (ns = %s) missing <updateRate>, defaults to %f",
                                robot_namespace_.c_str(), update_rate_ );
         } else {
@@ -79,6 +79,27 @@ void GazeboRosTraversability::Load( physics::ModelPtr _parent, sdf::ElementPtr _
         } else {
                 update_period_ = 0.0;
         }
+
+        publish_pose_twist_ = false;
+
+        if ( !_sdf->HasElement ( "publishPoseAndTwist" ) ) {
+                ROS_WARN_NAMED("gazebo_ros_traversability",
+                               "GazeboRosTraversability Plugin (ns = %s) missing <publishPoseAndTwist>, defaults to %d",
+                               robot_namespace_.c_str(), publish_pose_twist_ );
+        } else {
+                publish_pose_twist_ = _sdf->GetElement ( "publishPoseAndTwist" )->Get<bool>();
+        }
+
+        use_ros_time_ = false;
+
+        if ( !_sdf->HasElement ( "useROSTime" ) ) {
+                ROS_WARN_NAMED("gazebo_ros_traversability",
+                               "GazeboRosTraversability Plugin (ns = %s) missing <useROSTime>, defaults to %d",
+                               robot_namespace_.c_str(), use_ros_time_ );
+        } else {
+                use_ros_time_ = _sdf->GetElement ( "useROSTime" )->Get<bool>();
+        }
+
         joint_msg_.name = readListParam(_sdf, "jointName");
         uint n = joint_msg_.name.size();
         auto fields = {&joint_msg_.position, &joint_msg_.velocity, &joint_msg_.effort};
@@ -111,6 +132,15 @@ void GazeboRosTraversability::Load( physics::ModelPtr _parent, sdf::ElementPtr _
         power_publisher_ = rosnode_->advertise<gazebo_traversability_plugin::Power> ( "power",0 );
         contact_publisher_ = rosnode_->advertise<gazebo_traversability_plugin::ContactState> ( "contact_states",0 );
 
+
+        if(publish_pose_twist_)
+        {
+          pose_publisher_ = rosnode_->advertise<geometry_msgs::PoseStamped> ( "pose",0 );
+          twist_publisher_ = rosnode_->advertise<geometry_msgs::TwistStamped> ( "twist",0 );
+          pose_msg_.header.frame_id = "gz";
+          twist_msg_.header.frame_id = "gz";
+        }
+
         last_update_time_ = this->world_->GetSimTime();
         // Listen to the update event. This event is broadcast every
         // simulation iteration.
@@ -132,8 +162,45 @@ void GazeboRosTraversability::OnUpdate ( const common::UpdateInfo & _info ) {
         if ( seconds_since_last_update > update_period_ ) {
                 publishJointStates();
                 publishContacts();
+                if(publish_pose_twist_)
+                {
+                  publishPoseAndTwist();
+                }
                 last_update_time_+= common::Time ( update_period_ );
         }
+}
+
+void GazeboRosTraversability::publishPoseAndTwist()
+{
+
+    ros::Time stamp = sim_time();
+
+    math::Pose pose = parent_->GetWorldPose();
+    pose_msg_.pose.position.x = pose.pos.x;
+    pose_msg_.pose.position.y = pose.pos.y;
+    pose_msg_.pose.position.z = pose.pos.z;
+    pose_msg_.pose.orientation.x = pose.rot.x;
+    pose_msg_.pose.orientation.y = pose.rot.y;
+    pose_msg_.pose.orientation.z = pose.rot.z;
+    pose_msg_.pose.orientation.w = pose.rot.w;
+
+    pose_msg_.header.stamp = stamp;
+
+    math::Vector3 linear, angular;
+    linear = parent_->GetWorldLinearVel();
+    angular = parent_->GetWorldAngularVel();
+    twist_msg_.twist.linear.x = linear.x;
+    twist_msg_.twist.linear.y = linear.y;
+    twist_msg_.twist.linear.z = linear.z;
+    twist_msg_.twist.angular.x = angular.x;
+    twist_msg_.twist.angular.y = angular.y;
+    twist_msg_.twist.angular.z = angular.z;
+
+    twist_msg_.header.stamp = stamp;
+
+    pose_publisher_.publish(pose_msg_);
+    twist_publisher_.publish(twist_msg_);
+
 }
 
 
@@ -154,14 +221,14 @@ void GazeboRosTraversability::publishContacts()
                 if(collisions_.count(c1)) *(collisions_[c1]) = 1;
                 if(collisions_.count(c2)) *(collisions_[c2]) = 1;
         }
-        contact_msg_.header.stamp = ros::Time::now();
+        contact_msg_.header.stamp = sim_time();
         contact_publisher_.publish(contact_msg_);
 }
 
 
 void GazeboRosTraversability::publishJointStates() {
 
-        ros::Time current_time = ros::Time::now();
+        ros::Time current_time = sim_time();
         joint_msg_.header.stamp = current_time;
         for ( int i = 0; i < joints_.size(); i++ ) {
                 physics::JointPtr joint = joints_[i];
@@ -183,6 +250,19 @@ void GazeboRosTraversability::publishJointStates() {
         power_msg_.power = power;
         power_msg_.energy += power * update_period_;
         power_publisher_.publish(power_msg_);
+}
+
+ros::Time GazeboRosTraversability::sim_time()
+{
+  if(use_ros_time_)
+  {
+    return ros::Time::now();
+  }
+  else
+  {
+    common::Time current_time = world_->GetSimTime();
+    return ros::Time(current_time.sec, current_time.nsec);
+  }
 }
 
 }

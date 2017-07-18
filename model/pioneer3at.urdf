@@ -562,6 +562,8 @@
         <linkName>p3at_front_left_wheel, p3at_front_right_wheel, p3at_back_left_wheel, p3at_back_right_wheel, base_link</linkName>
         <updateRate>100.0</updateRate>
         <alwaysOn>true</alwaysOn>
+        <useROSTime>false</useROSTime>
+        <publishPoseAndTwist>true</publishPoseAndTwist>
       </plugin>
   </gazebo>
 

@@ -29,6 +29,8 @@ To enable the plugin, you have to add:
       <linkName>p3at_front_left_wheel, p3at_front_right_wheel, p3at_back_left_wheel, p3at_back_right_wheel, base_link</linkName>
       <updateRate>100.0</updateRate>
       <alwaysOn>true</alwaysOn>
+      <useROSTime>false</useROSTime>
+      <publishPoseAndTwist>true</publishPoseAndTwist>
     </plugin>
 </gazebo>
 <gazebo reference="p3at_front_left_wheel">
@@ -79,6 +81,18 @@ to your model. The plugin will publish information about all joints in `<jointNa
 1. front right wheel
 1. back_left_wheel
 1. back_right_wheel
+
+
+### Plugin parameters
+
+#### Time stamps
+
+If `<useROSTime>` is set to `true`, messages are stamped with `ros::Time::now()` instead of `world->GetSimTime()` causing some jittering beacuse of tcp latency (ros clock in nodes is updated via the `/clock` topic).
+
+#### Pose and Twist publishers
+
+If `<publishPoseAndTwist>` is set to `true`, the plugin will publish a PoseStamped and a TwistStamped messages, both in gazebo absolute frame `"gz"`.
+This offers a lightweight alternative to Odometry messages.
 
 
 ## Demo

@@ -6,10 +6,10 @@
     type: topic
     message_type: geometry_msgs/Twist
     topic_name: cmd_vel
-    deadman_buttons: [7]
+    deadman_buttons: []
     axis_mappings:
       -
-        axis: 3
+        axis: 1
         target: linear.x
         scale: 0.5
         offset: 0

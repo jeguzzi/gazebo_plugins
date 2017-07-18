@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   urdf
   message_generation
+  geometry_msgs
 )
 
 find_package(Boost REQUIRED COMPONENTS thread)
